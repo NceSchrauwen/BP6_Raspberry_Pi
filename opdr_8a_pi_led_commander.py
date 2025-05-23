@@ -1,4 +1,4 @@
-# Opdracht 6 Raspberry Pi - Nina Schrauwen
+# Opdracht 8a Raspberry Pi - Nina Schrauwen
 # LED1 and LED2 have to flash alternately with a 1 second interval.
 # This program is to command the arduino to power the LEDs when they need to be on/off.
 
