@@ -1,3 +1,5 @@
+// Opdracht 9 - Nina Schrauwen
+// Beschrijving: IR signalen worden gekoppeld aan de knoppen op de afstandsbediening, deze worden doorgestuurd naar de Pi via seriële communicatie 
 #include <IRremote.hpp>
 
 // Definieer constante variabele (IR receiver pin)
