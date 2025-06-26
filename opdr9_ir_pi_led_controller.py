@@ -50,7 +50,7 @@ print("Initial random active LEDs:", active_leds)
 def toggle_leds():
     global led_state
     for pin in LED_PINS:
-        # Als de pin in de actieve LEDs zit, toggle de status
+        # Als de ledpin in de actieve LEDs zit, toggle de status op basis van de huidige ledstatus
         if pin in active_leds:
             GPIO.output(pin, GPIO.HIGH if led_state else GPIO.LOW)
         # Als de pin niet in de actieve LEDs zit, zet deze uit
@@ -105,7 +105,7 @@ try:
         if time.time() - last_toggle >= blink_speed / 1000:
             # Roep de toggle_leds functie om de LEDs te wisselen waar nodig wanneer het blink interval is verstreken
             toggle_leds()
-            # Reset de last_toggle tijd zodat de tijdsduur van het volgende blink interval bereken kan worden
+            # Reset de last_toggle tijd zodat de tijdsduur van het volgende blink interval bereikt kan worden
             last_toggle = time.time()
 
 # Vangen van KeyboardInterrupt om het programma netjes af te sluiten
