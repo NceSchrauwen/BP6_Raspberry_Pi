@@ -1,5 +1,5 @@
-# Opdracht 1: Hello World
-# Name: Nina Schrauwen
-# Description: Test the SSH connection and run a Python script on the Raspberry Pi
+# Opdracht 1: Hallo Wereld
+# Naam: Nina Schrauwen
+# Beschrijving: Test de SSH-verbinding en voer een Python-script uit op de Raspberry Pi
 
 print("First Python script successfully ran by the pi!")
