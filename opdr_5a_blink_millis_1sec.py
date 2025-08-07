@@ -15,63 +15,63 @@ def millis():
 LED_PIN = 17
 BUTTON_PIN = 18
 
-# Button and Led setup
+# Setup van knop en LED
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(LED_PIN, GPIO.OUT)
 GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-# Led, time and interval states
+# Statusvariabelen voor LED, tijd en knipperinterval
 led_state = False
 last_toggle_time = millis()
 blink_interval = 1000
 
-# Other state variables
+# Overige statusvariabelen
 press_count = 0
 last_button_state = GPIO.input(BUTTON_PIN)
 button_debounce_time = millis()
 
-print("Ready to be pressed")
+print("Klaar om ingedrukt te worden")
 
 try:
     while True:
-        # Variable holds the current time in milliseconds
+        # Variabele houdt de huidige tijd bij in milliseconden
         current_time = millis()
-        # Button state is read and saved
+        # Lees de huidige status van de knop uit
         button_state = GPIO.input(BUTTON_PIN)
 
-        # Detect a button press (edge: HIGH -> LOW)
+        # Detecteer een druk op de knop (overgang van HOOG naar LAAG)
         if last_button_state == GPIO.HIGH and button_state == GPIO.LOW:
-            # Debounce check
+            # Debounce-check
             if current_time - button_debounce_time > 200:
-                # Add to the press counter
+                # Verhoog het aantal keer dat op de knop is gedrukt
                 press_count += 1
-                # Set button_debounce_time to the current time 
+                # Stel de debounce-tijd opnieuw in op de huidige tijd
                 button_debounce_time = current_time
                 print(f"Knop ingedrukt! Aantal drukken: {press_count}")
 
-                # Reset to 0 after 3 presses to reset the press_counter
+                # Reset het aantal drukken na 3x indrukken (dus bij 4e druk)
                 if press_count > 3:
                     press_count = 0
 
-        #Update the last_button_state to the current state
+        # Update de vorige knopstatus naar de huidige status
         last_button_state = button_state
 
-        # If the button has been pressed either once or thrice set the LED to blink
+        # Als de knop 1 of 3 keer is ingedrukt, laat de LED knipperen
         if press_count == 1 or press_count == 3:
-            # Check if an interval of 1 second has been passed, if so switch the current state of the led (LOW to HIGH, etc)
+            # Controleer of er 1 seconde is verstreken, en wissel dan de LED-status
             if current_time - last_toggle_time >= blink_interval:
                 led_state = not led_state
                 GPIO.output(LED_PIN, led_state)
-                # Update last_toggle_time to the current time for the next check
+                # Update de laatste toggle-tijd naar het huidige moment
                 last_toggle_time = current_time
         else:
-            # If it hasn't been pressed those amount of times turn the LEDs OFF
+            # In alle andere gevallen: zet de LED uit
             GPIO.output(LED_PIN, False)
             led_state = False
 
-        # Slight delay
+        # Kleine vertraging om CPU-belasting te beperken
         time.sleep(0.01)
 
-# Error handling in case of keyboard interruption 
+# Foutafhandeling bij handmatige onderbreking (Ctrl+C)
 except KeyboardInterrupt:
     GPIO.cleanup()
