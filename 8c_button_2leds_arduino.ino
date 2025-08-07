@@ -1,60 +1,60 @@
 // Opdracht 8c Raspberry Pi - Nina Schrauwen
-// If the button is pressed, the LEDs will toggle between LED1 and LED2.
-// This program lets the pi know when a button is pressed and receives signals to toggle the led states
+// Als de knop wordt ingedrukt, wisselen de LEDs tussen LED1 en LED2.
+// Dit programma laat de pi weten wanneer een knop wordt ingedrukt en ontvangt signalen om de led-statussen te wisselen.
 
-// Define constant imports 
+// Definieer constante imports
 const int BUTTON = 8;
 const int LED1 = 4;
 const int LED2 = 7;
 
-// State and string global variables
+// Globale variabelen voor status en string
 int lastButtonState = HIGH;
 String input = "";
 
-// LED, button and serial communication setup
+// Setup van LED, knop en seriële communicatie
 void setup() {
   Serial.begin(9600);
   pinMode(BUTTON, INPUT_PULLUP);
   pinMode(LED1, OUTPUT);
   pinMode(LED2, OUTPUT);
-  // Start of with both LEDs being off
+  // Begin met beide LEDs uit
   digitalWrite(LED1, LOW);
   digitalWrite(LED2, LOW);
-  Serial.println("Arduino ready");
+  Serial.println("Arduino klaar");
 }
 
-// Main loop to determine if a button is pressed and if led states need to be toggled
+// Hoofdlus om te bepalen of een knop is ingedrukt en of de led-statussen moeten worden gewisseld
 void loop() {
-  // Read the button state
+  // Lees de status van de knop
   int currentState = digitalRead(BUTTON);
-  // If a button is pressed sent a message to the pi
+  // Als een knop is ingedrukt, stuur een bericht naar de pi
   if (lastButtonState == HIGH && currentState == LOW) {
     Serial.println("BUTTON_PRESS");
-    delay(200);  // basic debounce
+    delay(200);  // eenvoudige debounce
   }
-  // Update the lastButtonState to the current ledstate
+  // Update de lastButtonState naar de huidige ledstatus
   lastButtonState = currentState;
 
-  // If serial communication is received
+  // Als er seriële communicatie is ontvangen
   while (Serial.available()) {
-    // To read the character of a larger message of the current serial communcation
+    // Lees het karakter van een groter bericht van de huidige seriële communicatie
     char c = Serial.read();
-    // If end of line character has been reached determine which message it is and act on it
+    // Als het einde van de regel is bereikt, bepaal welk bericht het is en onderneem actie
     if (c == '\n') {
-      // Trim the message from whitespace
+      // Verwijder witruimte uit het bericht
       input.trim();
-      // If the message says LED1, turn on the ledstate and turn off the ledstate of LED2
+      // Als het bericht "LED1" is, zet die led aan en de andere uit
       if (input == "LED1") {
         digitalWrite(LED1, HIGH);
         digitalWrite(LED2, LOW);
-      // If the message says LED2, turn on the ledstate and turn off the ledstate of LED1
+      // Als het bericht "LED2" is, zet die led aan en de andere uit
       } else if (input == "LED2") {
         digitalWrite(LED1, LOW);
         digitalWrite(LED2, HIGH);
       }
-      // Otherwise input is set to nothing 
+      // Anders wordt de input weer leeg gemaakt
       input = "";
-    // If the end of the line has not been reached keep adding the characters
+    // Als het einde van de regel nog niet is bereikt, blijf tekens toevoegen
     } else {
       input += c;
     }
