@@ -1,11 +1,11 @@
 // Opdracht 8b - Nina Schrauwen
-// Receive and extract messages from the Pi to power the leds to blink in the way the Pi instructed them to do so
+// Ontvang en verwerk berichten van de Pi om de leds te laten knipperen zoals de Pi dat heeft aangegeven
 
-// Define constants
+// Definieer constanten
 const int LED1 = 4;
 const int LED2 = 7;
 
-// Define interval and other state related variables
+// Definieer interval- en statusgerelateerde variabelen
 unsigned long intervalLED1;
 unsigned long intervalLED2;
 
@@ -14,11 +14,11 @@ unsigned long lastToggleLED2 = 0;
 bool led1State = false;
 bool led2State = false;
 
-// Other global variables
+// Andere globale variabelen
 bool blinking = false;
 String input = "";
 
-// Led and serial communication setup
+// Setup voor leds en seriële communicatie
 void setup() {
   Serial.begin(9600);
   pinMode(LED1, OUTPUT);
@@ -27,73 +27,73 @@ void setup() {
   digitalWrite(LED2, LOW);
 }
 
-// Main loop
+// Hoofdlus
 void loop() {
-  // Returns the serial communication and forwards it to the handleCommand function for further processing
+  // Leest de seriële communicatie uit en stuurt deze door naar de handleCommand-functie voor verdere verwerking
   while (Serial.available()) {
     char c = Serial.read();
-    // If the message has reached the new line character then forward the compiled messafe to the handleCommand function
+    // Als het bericht eindigt op een newline-karakter, stuur dan het volledige bericht door naar de handleCommand-functie
     if (c == '\n') {
       handleCommand(input);
       input = "";
-    // Keep adding charachters until the message has reached the new line character
+    // Blijf tekens toevoegen totdat het newline-karakter is bereikt
     } else {
       input += c;
     }
   }
 
-  // Blink seperately due to different timing intervals 
+  // Laat leds afzonderlijk knipperen vanwege verschillende intervaltijden
   if (blinking) {
-    // Use millis to get the exact time in milliseconds
+    // Gebruik millis om de huidige tijd in milliseconden op te halen
     unsigned long now = millis();
 
-    // If the interval that has been given to LED1 has been reached/exceeded then toggle ledstates
+    // Als het interval voor LED1 is bereikt of overschreden, wissel de LED-status
     if (now - lastToggleLED1 >= intervalLED1) {
-      // Toggle to the opposite ledstate (HIGH to LOW, and vise versa)
+      // Wissel naar de tegenovergestelde status (HIGH naar LOW en omgekeerd)
       led1State = !led1State;
       digitalWrite(LED1, led1State ? HIGH : LOW);
-      // Update the time it has last been toggled to now
+      // Update het tijdstip waarop de LED voor het laatst is gewisseld
       lastToggleLED1 = now;
     }
-    // If the interval that has been given to LED2 has been reached/exceeded then toggle ledstates
+    // Als het interval voor LED2 is bereikt of overschreden, wissel de LED-status
     if (now - lastToggleLED2 >= intervalLED2) {
-      // Toggle to the opposite ledstate (HIGH to LOW, and vise versa)
+      // Wissel naar de tegenovergestelde status (HIGH naar LOW en omgekeerd)
       led2State = !led2State;
       digitalWrite(LED2, led2State ? HIGH : LOW);
-      // Update the time it has last been toggled to now
+      // Update het tijdstip waarop de LED voor het laatst is gewisseld
       lastToggleLED2 = now;
     }
   }
 }
 
-// Function to process incoming commands from the pi and take actions based on the incoming messages
+// Functie om inkomende commando’s van de Pi te verwerken en acties uit te voeren op basis van het bericht
 void handleCommand(String cmd) {
   if (cmd.startsWith("SET")) {
     int ledPin = -1;
     unsigned long interval = 0;
 
-    // Disect the message into different parts
+    // Splits het bericht op in verschillende onderdelen
     int firstSpace = cmd.indexOf(' ');
     int secondSpace = cmd.indexOf(' ', firstSpace + 1);
 
-    // Extract the Led pins and the value from the message
+    // Haal de LED-pin en waarde uit het bericht
     String led = cmd.substring(firstSpace + 1, secondSpace);
     String value = cmd.substring(secondSpace + 1);
-    // Convert the led interval from a string into an int
+    // Zet het interval voor de LED om van string naar int
     interval = value.toInt();
 
-    // If the message contains LED1
+    // Als het bericht betrekking heeft op LED1
     if (led == "LED1") {
-      // The interval for LED1 becomes the interval that was listed in the message
+      // Stel het interval van LED1 in op de opgegeven waarde
       intervalLED1 = interval;
-      Serial.println("LED1 interval ingesteld op " + value);
-    // If the message contains LED2
+      Serial.println("LED1-interval ingesteld op " + value);
+    // Als het bericht betrekking heeft op LED2
     } else if (led == "LED2") {
-      // The interval for LED2 becomes the interval that was listed in the message
+      // Stel het interval van LED2 in op de opgegeven waarde
       intervalLED2 = interval;
-      Serial.println("LED2 interval ingesteld op " + value);
+      Serial.println("LED2-interval ingesteld op " + value);
     }
-  // If the message is just start set blinking to true, this means the blinking sequence can start  
+  // Als het bericht "START" is, stel blinking in op true zodat het knipperen begint
   }
   else if (cmd == "START") {
     blinking = true;
