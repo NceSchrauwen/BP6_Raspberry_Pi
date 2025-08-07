@@ -1,10 +1,10 @@
 // Opdracht 8a - Nina Schrauwen
-// This program receives and executes the commands given via the Pi
-// Define constant variables
+// Dit programma ontvangt en voert de commando’s uit die via de Pi worden verzonden
+// Definieer constante variabelen
 const int LED1 = 4;
 const int LED2 = 7;
 
-// Led setup and setup of seral communication
+// Setup van de leds en de seriële communicatie
 void setup() {
   Serial.begin(9600);
   pinMode(LED1, OUTPUT);  
@@ -13,21 +13,21 @@ void setup() {
   digitalWrite(LED2, LOW);
 }
 
-//  Main loop to translate and execute the commands received from the pi
+// Hoofdlus om de ontvangen commando’s van de Pi te vertalen en uit te voeren
 void loop() {
-  // If a serial connection has been established with the Pi
+  // Als er een seriële verbinding is gemaakt met de Pi
   if (Serial.available()) {
-    Serial.println("Connected with pi");
-    //  Read the command
+    Serial.println("Verbonden met Pi");
+    // Lees het commando uit
     char cmd = Serial.read();
-    // Command to turn on LED1, turn LED2 off (blinking sequence)
+    // Commando om LED1 aan te zetten en LED2 uit (knippervolgorde)
     if (cmd == 'A') {
-      Serial.println("First sequence");
+      Serial.println("Eerste volgorde");
       digitalWrite(LED1, HIGH);
       digitalWrite(LED2, LOW);
-      // Command to turn on LED2, turn LED1 off (blinking sequence)
+    // Commando om LED2 aan te zetten en LED1 uit (knippervolgorde)
     } else if (cmd == 'B') {
-      Serial.println("Second sequence"); 
+      Serial.println("Tweede volgorde"); 
       digitalWrite(LED1, LOW);
       digitalWrite(LED2, HIGH);
     }
