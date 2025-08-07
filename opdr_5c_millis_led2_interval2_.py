@@ -1,26 +1,26 @@
 # Opdracht 5c Raspberry Pi - Nina Schrauwen
-# BTN == HIGH -> LED1 blink (1s aan/1s uit)
-# BTN == LOW -> LED2 blink (1.3s aan/0.7s uit)
+# BTN == HIGH -> LED1 knippert (1s aan / 1s uit)
+# BTN == LOW  -> LED2 knippert (1.3s aan / 0.7s uit)
 
 import RPi.GPIO as GPIO
 import time
 
-# Function that returns the time in seconds 
+# Functie die de tijd in milliseconden teruggeeft
 def millis():
     return int(time.monotonic() * 1000)
 
-# LED and button setup
+# LED- en knopconfiguratie
 LED_PIN1 = 17 
 LED_PIN2 = 27  
 BUTTON_PIN = 18
 
-# LED and button config
+# Instellen van GPIO voor LEDs en knop
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(LED_PIN1, GPIO.OUT)
 GPIO.setup(LED_PIN2, GPIO.OUT)
 GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-# Led and toggle variables
+# Statusvariabelen voor LEDs en schakeltijden
 led1_state = False
 led2_state = False
 last_toggle_time1 = millis()
@@ -28,26 +28,26 @@ last_toggle_time2 = millis()
 
 try:
     while True:
-        # Save the current time in seconds
+        # Huidige tijd in milliseconden opslaan
         current_time = millis()
-        # Read and save current button state
+        # Lees de huidige status van de knop uit
         button_state = GPIO.input(BUTTON_PIN)
 
-        # Note: button_state == 0 means pressed (ON), button_state == 1 means not pressed (OFF) because of the pull up button
-        print(f"Current button state: {'ON' if button_state == 0 else 'OFF'}")
+        # Let op: button_state == 0 betekent ingedrukt (AAN), button_state == 1 betekent niet ingedrukt (UIT) vanwege pull-up
+        print(f"Huidige knopstatus: {'AAN' if button_state == 0 else 'UIT'}")
 
-        # If the button has been pressed turn on LED1 with the following blinking interval
+        # Als de knop is ingedrukt, laat LED1 knipperen met onderstaand interval
         if button_state == GPIO.LOW:
-            # BUTTON PRESSED -> LED1 blinks (1s on / 1s off)
+            # KNOP INGEDRUKT -> LED1 knippert (1s aan / 1s uit)
             on_duration1 = 1000
             off_duration1 = 1000
             elapsed1 = current_time - last_toggle_time1
 
-            # Reset LED2 (green)
+            # Zet LED2 (groen) uit
             led2_state = False
             GPIO.output(LED_PIN2, False)
 
-            # Switch led states when the on/off duration has passed and update the last time it was switched to the current time
+            # Wissel de LED-status als de aan/uit-duur verstreken is en update de schakeltijd
             if led1_state:
                 if elapsed1 >= on_duration1:
                     led1_state = False
@@ -57,22 +57,22 @@ try:
                     led1_state = True
                     last_toggle_time1 = current_time
 
-            # Turn on/off LED1 to current LED state
+            # Zet LED1 aan of uit op basis van de huidige status
             GPIO.output(LED_PIN1, led1_state)
 
-        # If the button isn't being pressed turn on LED2 with the following blinking interval
+        # Als de knop niet is ingedrukt, laat LED2 knipperen met onderstaand interval
         else:
-            # BUTTON NOT PRESSED -> LED2 blinks (1.3s on / 0.7s off)
+            # KNOP NIET INGEDRUKT -> LED2 knippert (1.3s aan / 0.7s uit)
             on_duration2 = 1300
             off_duration2 = 700
-            # Measure the elapsed time 
+            # Meet de verstreken tijd
             elapsed2 = current_time - last_toggle_time2
 
-            # Reset LED1, make sure it is off
+            # Zet LED1 uit
             led1_state = False
             GPIO.output(LED_PIN1, False)
 
-            # Switch led states when the on/off duration has passed and update the last time it was switched to the current time
+            # Wissel de LED-status als de aan/uit-duur verstreken is en update de schakeltijd
             if led2_state:
                 if elapsed2 >= on_duration2:
                     led2_state = False
@@ -82,12 +82,12 @@ try:
                     led2_state = True
                     last_toggle_time2 = current_time
 
-            # Turn on/off LED1 to current LED state
+            # Zet LED2 aan of uit op basis van de huidige status
             GPIO.output(LED_PIN2, led2_state)
 
-        # Slight delay 
+        # Korte vertraging om CPU-belasting te beperken
         time.sleep(0.01)
 
-# Catch keyboard exceptions
+# Foutafhandeling bij toetsenbordonderbreking (Ctrl+C)
 except KeyboardInterrupt:
     GPIO.cleanup()
