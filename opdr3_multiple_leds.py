@@ -1,114 +1,102 @@
-# Opdracht 3: Control 2 leds at once
-# Name: Nina Schrauwen
-# Description: Control 2 leds at once simultaneously, one after the other and with different intervals.
+# Opdracht 3: Bestuur 2 LEDs tegelijk
+# Naam: Nina Schrauwen
+# Beschrijving: Bestuur 2 LEDs tegelijk, na elkaar en met verschillende intervallen. Opdracht onderverdeeld in 3 aparte functies die achter elkaar worden aangeroepen (a t/m c).
 
-#Import libraries
+# Importeer bibliotheken
 import RPi.GPIO as GPIO
 import time
 
-# GPIO pin number of LED
+# GPIO-pin nummers van de LEDs
 LED1 = 17
 LED2 = 18
 
-# GPIO setup
-GPIO.setmode(GPIO.BCM) # Use Broadcom SOC channel numbering
-GPIO.setup(LED1, GPIO.OUT) # Set pin as output
-GPIO.setup(LED2, GPIO.OUT) # Set pin as output
+# GPIO-instellingen
+GPIO.setmode(GPIO.BCM)  # Gebruik Broadcom SOC-pinnummering
+GPIO.setup(LED1, GPIO.OUT)  # Zet pin als output
+GPIO.setup(LED2, GPIO.OUT)  # Zet pin als output
 
-# Let the leds blink at the same time, 1 second on, 1 second off
+# Laat beide LEDs tegelijk knipperen, 1 seconde aan, 1 seconde uit
 def opdracht_a():
-    print("Opdracht a: Both LEDs blink at the same time.")
+    print("Opdracht a: Beide LEDs knipperen tegelijk.")
     
-    # Blink the leds 5 times simultaneously
+    # LEDs 5 keer tegelijk laten knipperen
     for _ in range(5):
-        GPIO.output(LED1, GPIO.HIGH) # Turn on LED
-        GPIO.output(LED2, GPIO.HIGH) # Turn on LED
-        time.sleep(1) # Keep LED on for 1 second
+        GPIO.output(LED1, GPIO.HIGH)  # Zet LED aan
+        GPIO.output(LED2, GPIO.HIGH)  # Zet LED aan
+        time.sleep(1)  # Laat LEDs 1 seconde aan
         
-        GPIO.output(LED1, GPIO.LOW) # Turn off LED
-        GPIO.output(LED2, GPIO.LOW) # Turn off LED
-        time.sleep(1) # Turn off LED for 1 second
+        GPIO.output(LED1, GPIO.LOW)  # Zet LED uit
+        GPIO.output(LED2, GPIO.LOW)  # Zet LED uit
+        time.sleep(1)  # Laat LEDs 1 seconde uit
 
-# Let the leds blink one after the other, 1 second on, 1 second off
+# Laat de LEDs om de beurt knipperen, elk 1 seconde aan/uit
 def opdracht_b():   
-    print("Opdracht b: Both LEDs blink one after the other.")
+    print("Opdracht b: LEDs knipperen om de beurt.")
     
-    # Blink the leds 5 times one after the other
+    # LEDs 5 keer om en om laten knipperen
     for _ in range(5):
-        GPIO.output(LED1, GPIO.HIGH) # Turn on LED
-        time.sleep(1) # Keep LED on for 1 second
-        GPIO.output(LED1, GPIO.LOW) # Turn off LED
-        time.sleep(1) # Turn off LED for 1 second
+        GPIO.output(LED1, GPIO.HIGH)  # Zet LED1 aan
+        time.sleep(1)
+        GPIO.output(LED1, GPIO.LOW)  # Zet LED1 uit
+        time.sleep(1)
 
-        GPIO.output(LED2, GPIO.HIGH) # Turn on LED
-        time.sleep(1) # Keep LED on for 1 second
-        GPIO.output(LED2, GPIO.LOW) # Turn off LED
-        time.sleep(1) # Turn off LED for 1 second
+        GPIO.output(LED2, GPIO.HIGH)  # Zet LED2 aan
+        time.sleep(1)
+        GPIO.output(LED2, GPIO.LOW)  # Zet LED2 uit
+        time.sleep(1)
 
-# Let the leds blink at the same time, both with different intervals 
+# Laat beide LEDs tegelijk knipperen met verschillende intervallen
 def opdracht_c():   
-    print("Opdracht c: Both LEDs blink at the same time with different intervals.")
+    print("Opdracht c: Beide LEDs knipperen tegelijk met verschillende intervallen.")
     
-    # Define the intervals for both leds
-    led1_intervals = [1.3, 0.7] # [on, off] intervals for led1
-    led2_intervals = [0.8, 1.7] # [on, off] intervals for led2
+    # Definieer de intervallen voor beide LEDs
+    led1_intervals = [1.3, 0.7]  # [aan, uit] intervallen voor LED1
+    led2_intervals = [0.8, 1.7]  # [aan, uit] intervallen voor LED2
 
-    # Initialize the led states and timers
+    # Initialiseer LED-statussen en timers
     led1_state = GPIO.HIGH
     led2_state = GPIO.HIGH
-    # Start at intervals[0] because the led states are initialized as HIGH
+    # Start met interval[0] omdat de LEDs beginnen met HIGH
     led1_timer = time.time() + led1_intervals[0]
     led2_timer = time.time() + led2_intervals[0]
-    # Initialize the last interval times to measure the actual time the led was on or off
+    # Houd bij hoelang de LED daadwerkelijk aan of uit is geweest
     led1_last_interval = time.time()
     led2_last_interval = time.time()
 
-    # Get the start time
+    # Starttijd ophalen
     start_time = time.time()
-    # Run led blinking sequence for 10 seconds
+    # Voer de knippervolgorde 10 seconden uit
     while time.time() - start_time < 10:
-        # Get the current time
         current_time = time.time()
 
-        # If the current time exceeds the timer, toggle the led state, show the led state and set the next timer
+        # Controleer of timer verlopen is → wissel status LED1 (toggle LED1 HIGH/LOW)
         if current_time >= led1_timer:
-            # Calculate the actual interval to compare the actual time the led was on or off
             actual_interval1 = current_time - led1_last_interval
-            print(f"LED1 {'ON' if led1_state == GPIO.HIGH else 'OFF'} for {actual_interval1:.2f} seconds")
-            # Toggle the led state (HIGH to LOW or LOW to HIGH)
+            print(f"LED1 {'AAN' if led1_state == GPIO.HIGH else 'UIT'} gedurende {actual_interval1:.2f} seconden")
             led1_state = GPIO.LOW if led1_state == GPIO.HIGH else GPIO.HIGH
-            # Show the current led state
             GPIO.output(LED1, led1_state)
-            # Set the next timer based on the current state of the led
             led1_timer = current_time + (led1_intervals[0] if led1_state == GPIO.HIGH else led1_intervals[1])
-            # Update the last interval time
             led1_last_interval = current_time
 
-        # If the current time exceeds the timer, toggle the led state, show the led state and set the next timer
+        # Controleer of timer verlopen is → wissel status LED2 (toggle LED2 HIGH/LOW)
         if current_time >= led2_timer:
-            # Calculate the actual interval to compare the actual time the led was on or off
             actual_interval2 = current_time - led2_last_interval
-            print(f"LED2 {'ON' if led2_state == GPIO.HIGH else 'OFF'} for {actual_interval2:.2f} seconds")
-            # Toggle the led state (HIGH to LOW or LOW to HIGH)
+            print(f"LED2 {'AAN' if led2_state == GPIO.HIGH else 'UIT'} gedurende {actual_interval2:.2f} seconden")
             led2_state = GPIO.LOW if led2_state == GPIO.HIGH else GPIO.HIGH
-            # Show the current led state
             GPIO.output(LED2, led2_state)
-            # Set the next timer based on the current state of the led
             led2_timer = current_time + (led2_intervals[0] if led2_state == GPIO.HIGH else led2_intervals[1])
-            # Update the last interval time
             led2_last_interval = current_time
 
-        # Short delay to avoid high CPU usage
+        # Korte vertraging om CPU-gebruik te beperken
         time.sleep(0.01)
 
-# Run the opdracht functions
+# Voer de opdrachten een voor een uit
 try:
     opdracht_a()
     opdracht_b()
     opdracht_c()
 
-# Clean up GPIO settings
+# Reset GPIO-instellingen, ook als er fouten optreden of het script wordt onderbroken
 finally:
     GPIO.cleanup()
-    print("GPIO cleanup completed.")
-
+    print("GPIO-reset voltooid.")
