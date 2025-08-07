@@ -1,28 +1,29 @@
 # Opdracht 8c Raspberry Pi - Nina Schrauwen
-# If the button is pressed, the LEDs will toggle between LED1 and LED2.
-# This program is to command the arduino to power the LEDs, which LED1 or LED2 is determined by the button press.
+# Als de knop wordt ingedrukt, wisselen de LEDs tussen LED1 en LED2.
+# Dit programma is bedoeld om de arduino te laten bepalen welke LED (LED1 of LED2) moet branden op basis van het indrukken van de knop.
 
 import serial
 import time
 
-# Define serial port and baud rate
+# Definieer seriële poort en baudrate
 ser = serial.Serial('/dev/serial0', 9600)
-time.sleep(2)  # let Arduino boot up
+time.sleep(2)  # wacht tot Arduino is opgestart
 
-state = False  # LED toggle state
+state = False  # LED wisselstatus
 
-print("Pi ready. Waiting for button press...")
+print("Pi klaar. Wacht op knopdruk...")
 
-# Main loop to listen for button presses
+# Hoofdlus om te luisteren naar knopdrukken
 while True:
-    # Read the messages sent via serial communication 
+    # Lees de berichten die via seriële communicatie worden verstuurd
     line = ser.readline().decode().strip()
-    # A button press is indicated by the string "BUTTON_PRESS"
+    # Een knopdruk wordt aangegeven door de string "BUTTON_PRESS"
     if line == "BUTTON_PRESS":
-        # Update the state of the LED
+        # Werk de status van de LED bij
         state = not state
-        # Send the command to the Arduino to toggle the LED
+        # Stuur het commando naar de Arduino om de LED te wisselen
         command = "LED1\n" if state else "LED2\n"
-        # Send the command to the Arduino
+        # Stuur het commando naar de Arduino
         ser.write(command.encode())
-        print(f"Sent: {command.strip()}")
+        print(f"Verzonden: {command.strip()}")
+        
